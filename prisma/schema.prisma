@@ -13,3 +13,43 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  database  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Car {
+  id            String          @id @default(cuid())
+  licensePlate  String          @unique
+  brand         String
+  model         String
+  color         String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  parkingRecord ParkingRecord[]
+}
+
+model ParkingLot {
+  id            String          @id @default(cuid())
+  name          String
+  capacity      Int
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  parkingRecord ParkingRecord[]
+}
+
+model ParkingRecord {
+  id           String     @id @default(cuid())
+  entryTime    DateTime
+  exitTime     DateTime?
+  car          Car        @relation(fields: [carId], references: [id])
+  carId        String
+  parkingLot   ParkingLot @relation(fields: [parkingLotId], references: [id])
+  parkingLotId String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}

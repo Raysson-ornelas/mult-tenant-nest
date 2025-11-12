@@ -1,34 +1,38 @@
-import { Injectable, Scope, Inject } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { DatabaseService } from '../database/database.service';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../database/prisma.service';
 import { CreateParkingLotDto } from './dto/create-parking-lot.dto';
-import { v4 as uuidv4 } from 'uuid';
-import { ParkingLot } from 'src/database/models/parking-lot.model';
+import { UpdateParkingLotDto } from './dto/update-parking-lot.dto';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class ParkingLotService {
-  private readonly tenantId: string;
+  constructor(private readonly prisma: PrismaService) {}
 
-  constructor(
-    @Inject(REQUEST) private request: any,
-    private databaseService: DatabaseService,
-  ) {
-    this.tenantId = this.request.tenantId;
+  async create(createParkingLotDto: CreateParkingLotDto) {
+    return this.prisma.parkingLot.create({
+      data: createParkingLotDto,
+    });
   }
 
-  create(createParkingLotDto: CreateParkingLotDto): ParkingLot {
-    const newParkingLot: ParkingLot = {
-      id: uuidv4(),
-      tenantId: this.tenantId,
-      ...createParkingLotDto,
-    };
-    this.databaseService.parkingLots.push(newParkingLot);
-    return newParkingLot;
+  async findAll() {
+    return this.prisma.parkingLot.findMany();
   }
 
-  findAll(): ParkingLot[] {
-    return this.databaseService.parkingLots.filter(
-      (pl) => pl.tenantId === this.tenantId,
-    );
+  async findOne(id: string) {
+    return this.prisma.parkingLot.findUnique({
+      where: { id },
+    });
+  }
+
+  async update(id: string, updateParkingLotDto: UpdateParkingLotDto) {
+    return this.prisma.parkingLot.update({
+      where: { id },
+      data: updateParkingLotDto,
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.parkingLot.delete({
+      where: { id },
+    });
   }
 }

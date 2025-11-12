@@ -1,17 +1,38 @@
-import { Injectable, Scope, Inject, HttpException, HttpStatus } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { DatabaseService } from '../database/database.service';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../database/prisma.service';
+import { CreateTenantDto } from './dto/create-tenant.dto';
+import { UpdateTenantDto } from './dto/update-tenant.dto';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class TenantService {
-  constructor(
-    @Inject(REQUEST) private request: any,
-    private databaseService: DatabaseService,
-  ) {
-    const tenantId = this.request.tenantId;
-    const tenant = this.databaseService.tenants.find((t) => t.id === tenantId);
-    if (!tenant) {
-      throw new HttpException('Tenant not found', HttpStatus.NOT_FOUND);
-    }
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createTenantDto: CreateTenantDto) {
+    return this.prisma.tenant.create({
+      data: createTenantDto,
+    });
+  }
+
+  async findAll() {
+    return this.prisma.tenant.findMany();
+  }
+
+  async findOne(id: string) {
+    return this.prisma.tenant.findUnique({
+      where: { id },
+    });
+  }
+
+  async update(id: string, updateTenantDto: UpdateTenantDto) {
+    return this.prisma.tenant.update({
+      where: { id },
+      data: updateTenantDto,
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.tenant.delete({
+      where: { id },
+    });
   }
 }
