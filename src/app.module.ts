@@ -1,18 +1,24 @@
-import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseModule } from './database/database.module';
-import { TenantModule } from './tenant/tenant.module';
-import { TenantMiddleware } from './tenant/tenant.middleware';
+import { PrismaModule } from './database/prisma.module';
 import { ParkingLotModule } from './parking-lot/parking-lot.module';
+import { ClsModule } from 'nestjs-cls';
 
 @Module({
-  imports: [DatabaseModule, TenantModule, ParkingLotModule],
+  imports: [
+    PrismaModule,
+    ParkingLotModule,
+    ClsModule.forRoot({
+      middleware: {
+        mount: true,
+        setup: (cls, req) => {
+          cls.set('tenantId', req.headers['x-tenant-id']);
+        },
+      },
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(TenantMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}

@@ -1,34 +1,37 @@
-import { Injectable, Scope, Inject } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { DatabaseService } from '../database/database.service';
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../database/prisma.service';
 import { CreateParkingLotDto } from './dto/create-parking-lot.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { ParkingLot } from 'src/database/models/parking-lot.model';
+// TODO: Fix the import and type casting
+// import { ParkingLot } from '@prisma/client';
+import { ClsService } from 'nestjs-cls';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class ParkingLotService {
-  private readonly tenantId: string;
-
   constructor(
-    @Inject(REQUEST) private request: any,
-    private databaseService: DatabaseService,
-  ) {
-    this.tenantId = this.request.tenantId;
+    private readonly prisma: PrismaService,
+    private readonly cls: ClsService,
+  ) {}
+
+  async create(createParkingLotDto: CreateParkingLotDto): Promise<any> {
+    const tenantId = this.cls.get('tenantId');
+    // TODO: Fix the type casting
+    return (this.prisma as any).parkingLot.create({
+      data: {
+        id: uuidv4(),
+        tenantId,
+        ...createParkingLotDto,
+      },
+    });
   }
 
-  create(createParkingLotDto: CreateParkingLotDto): ParkingLot {
-    const newParkingLot: ParkingLot = {
-      id: uuidv4(),
-      tenantId: this.tenantId,
-      ...createParkingLotDto,
-    };
-    this.databaseService.parkingLots.push(newParkingLot);
-    return newParkingLot;
-  }
-
-  findAll(): ParkingLot[] {
-    return this.databaseService.parkingLots.filter(
-      (pl) => pl.tenantId === this.tenantId,
-    );
+  async findAll(): Promise<any[]> {
+    const tenantId = this.cls.get('tenantId');
+    // TODO: Fix the type casting
+    return (this.prisma as any).parkingLot.findMany({
+      where: {
+        tenantId,
+      },
+    });
   }
 }

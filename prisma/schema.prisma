@@ -13,3 +13,11 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model ParkingLot {
+  id             String @id @default(uuid())
+  name           String
+  pricePerHour   Float
+  pricePerMinute Float
+  tenantId       String
+}
