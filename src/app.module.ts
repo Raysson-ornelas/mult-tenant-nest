@@ -1,13 +1,13 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseModule } from './database/database.module';
+import { PrismaModule } from './database/prisma.module';
 import { TenantModule } from './tenant/tenant.module';
 import { TenantMiddleware } from './tenant/tenant.middleware';
 import { ParkingLotModule } from './parking-lot/parking-lot.module';
 
 @Module({
-  imports: [DatabaseModule, TenantModule, ParkingLotModule],
+  imports: [PrismaModule, TenantModule, ParkingLotModule],
   controllers: [AppController],
   providers: [AppService],
 })
