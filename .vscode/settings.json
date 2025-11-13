@@ -1,0 +1,11 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always"
+  },
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+  "eslint.workingDirectories": [
+    { "directory": "./mobile", "changeProcessCWD": true },
+    { "directory": "./backend", "changeProcessCWD": true }
+  ]
+}

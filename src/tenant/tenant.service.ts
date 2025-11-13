@@ -1,20 +1,30 @@
-import { Injectable, Scope, Inject, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  Scope,
+  Inject,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { PrismaService } from '../database/prisma.service';
+import { RequestWithTenant } from 'src/common/types/request-with-tenant.type';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TenantService {
   constructor(
-    @Inject(REQUEST) private request: any,
+    @Inject(REQUEST) private request: RequestWithTenant,
     private prisma: PrismaService,
   ) {
-    this.validateTenant();
+    void this.validateTenant();
   }
 
   async validateTenant() {
     const tenantId = this.request.tenantId;
     if (!tenantId) {
-      throw new HttpException('X-Tenant-ID header is missing', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'X-Tenant-ID header is missing',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const tenant = await this.prisma.tenant.findUnique({

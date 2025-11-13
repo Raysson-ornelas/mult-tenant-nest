@@ -1,12 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../generated/prisma"
+  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -15,16 +10,73 @@ datasource db {
 }
 
 model Tenant {
-  id    String @id @default(cuid())
-  name  String
-  users User[]
+  id          String       @id @default(cuid())
+  name        String
+  cars        Car[]
+  parkingLots ParkingLot[]
+  users       User[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Car {
+  id       String          @id @default(cuid())
+  plate    String
+  tenantId String
+  tenant   Tenant          @relation(fields: [tenantId], references: [id])
+  records  ParkingRecord[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([plate, tenantId])
+  @@index([tenantId])
+}
+
+model ParkingLot {
+  id             String          @id @default(cuid())
+  name           String
+  tenantId       String
+  tenant         Tenant          @relation(fields: [tenantId], references: [id])
+  pricePerHour   Float
+  pricePerMinute Float
+  records        ParkingRecord[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([name, tenantId])
+  @@index([tenantId])
+}
+
+model ParkingRecord {
+  id           String     @id @default(cuid())
+  entryTime    DateTime
+  exitTime     DateTime?
+  total        Float?
+  carId        String
+  car          Car        @relation(fields: [carId], references: [id])
+  parkingLotId String
+  parkingLot   ParkingLot @relation(fields: [parkingLotId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([carId])
+  @@index([parkingLotId])
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  password  String
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
-  tenantId  String
+  id       String @id @default(cuid())
+  email    String @unique
+  name     String
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+  tenantId String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([email, tenantId])
+  @@index([tenantId])
 }
