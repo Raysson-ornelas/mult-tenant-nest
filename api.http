@@ -1,0 +1,4 @@
+# GET http://localhost:3000/users HTTP/1.1
+# X-Tenant-ID: cmhxt6zmt0001x520yqu0p8e8
+
+POST http://localhost:3000/auth/signup
