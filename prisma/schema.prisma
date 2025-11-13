@@ -9,15 +9,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+  name  String
+
+  tenants UserTenant[]
+}
+
 model Tenant {
-  id          String       @id @default(cuid())
-  name        String
+  id   String @id @default(cuid())
+  name String
+
+  users       UserTenant[]
   cars        Car[]
   parkingLots ParkingLot[]
-  users       User[]
+}
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+model UserTenant {
+  id       String @id @default(cuid())
+  userId   String
+  tenantId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([userId, tenantId])
 }
 
 model Car {
@@ -65,18 +82,4 @@ model ParkingRecord {
 
   @@index([carId])
   @@index([parkingLotId])
-}
-
-model User {
-  id       String @id @default(cuid())
-  email    String @unique
-  name     String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-  tenantId String
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@unique([email, tenantId])
-  @@index([tenantId])
 }
