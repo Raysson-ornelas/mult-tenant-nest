@@ -1,10 +1,4 @@
-import {
-  Module,
-  MiddlewareConsumer,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './database/prisma.module';
@@ -14,28 +8,12 @@ import { ParkingLotModule } from './parking-lot/parking-lot.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-
-    PrismaModule,
-    TenantModule,
-    ParkingLotModule,
-    AuthModule,
-  ],
+  imports: [PrismaModule, TenantModule, ParkingLotModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(TenantMiddleware)
-      .exclude(
-        { path: 'auth/signup', method: RequestMethod.POST },
-        { path: 'auth/login', method: RequestMethod.POST },
-        { path: 'tenant', method: RequestMethod.POST },
-      )
-      .forRoutes('*');
+    consumer.apply(TenantMiddleware).forRoutes('*');
   }
 }
