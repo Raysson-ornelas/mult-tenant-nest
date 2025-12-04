@@ -8,34 +8,37 @@ import { ConfigService } from '@nestjs/config';
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
     private readonly authService: AuthService,
-    private readonly configService: ConfigService,
+    configService: ConfigService,
   ) {
     super({
-      clientID: configService.get('GOOGLE_CLIENT_ID'),
-      clientSecret: configService.get('GOOGLE_CLIENT_SECRET'),
-      callbackURL: configService.get('GOOGLE_CALLBACK_URL'),
+      clientID: configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
+      clientSecret: configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET'),
+      callbackURL: configService.getOrThrow<string>('GOOGLE_CALLBACK_URL'),
+      passReqToCallback: true,
       scope: ['email', 'profile'],
     });
   }
 
   async validate(
-    accessToken: string,
-    refreshToken: string,
-    profile: any,
+    _accessToken: string,
+    _refreshToken: string,
+    profile: {
+      name: { givenName: string; familyName: string };
+      emails: { value: string }[];
+      id: string;
+    },
     done: VerifyCallback,
-  ): Promise<any> {
+  ): Promise<void> {
     const { name, emails } = profile;
     if (!emails || emails.length === 0) {
-      return done(
-        new Error('Google provider did not return an email address'),
-        null,
-      );
+      done(new Error('Google provider did not return an email address'));
     }
     const user = await this.authService.validateUser({
       email: emails[0].value,
       name: `${name.givenName} ${name.familyName}`,
       provider: 'google',
       providerId: profile.id,
+      tenantId: 'default-tenant-id',
     });
     done(null, user);
   }

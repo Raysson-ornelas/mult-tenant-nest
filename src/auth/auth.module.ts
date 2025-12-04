@@ -4,26 +4,26 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { DatabaseModule } from 'src/database/database.module';
-import { UsersController } from './users/users.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserController } from 'src/user/user.controller';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
+    ConfigModule,
+    UserModule,
     PassportModule,
-    DatabaseModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '60s' },
-      }),
       inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.getOrThrow<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1d' },
+      }),
     }),
   ],
-  controllers: [UsersController, AuthController],
+  controllers: [UserController, AuthController],
   providers: [GoogleStrategy, FacebookStrategy, AuthService, JwtStrategy],
 })
 export class AuthModule {}

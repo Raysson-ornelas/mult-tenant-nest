@@ -8,24 +8,24 @@ import { ConfigService } from '@nestjs/config';
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
   constructor(
     private readonly authService: AuthService,
-    private readonly configService: ConfigService,
+    configService: ConfigService,
   ) {
     super({
-      clientID: configService.get('FACEBOOK_APP_ID'),
-      clientSecret: configService.get('FACEBOOK_APP_SECRET'),
-      callbackURL: configService.get('FACEBOOK_CALLBACK_URL'),
+      clientID: configService.getOrThrow<string>('FACEBOOK_APP_ID'),
+      clientSecret: configService.getOrThrow<string>('FACEBOOK_APP_SECRET'),
+      callbackURL: configService.getOrThrow<string>('FACEBOOK_CALLBACK_URL'),
       scope: 'email',
       profileFields: ['emails', 'name'],
     });
   }
 
   async validate(
-    accessToken: string,
-    refreshToken: string,
+    _accessToken: string,
+    _refreshToken: string,
     profile: Profile,
     done: (err: any, user: any, info?: any) => void,
-  ): Promise<any> {
-    const { name, emails } = profile;
+  ): Promise<void> {
+    const { displayName, emails, id } = profile;
     if (!emails || emails.length === 0) {
       return done(
         new Error('Facebook provider did not return an email address'),
@@ -34,9 +34,10 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     }
     const user = await this.authService.validateUser({
       email: emails[0].value,
-      name: `${name.givenName} ${name.familyName}`,
+      name: displayName,
       provider: 'facebook',
-      providerId: profile.id,
+      providerId: id,
+      tenantId: 'default-tenant-id',
     });
     done(null, user);
   }

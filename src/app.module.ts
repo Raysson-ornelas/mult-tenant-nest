@@ -12,6 +12,7 @@ import { TenantModule } from './tenant/tenant.module';
 import { TenantMiddleware } from './tenant/tenant.middleware';
 import { ParkingLotModule } from './parking-lot/parking-lot.module';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuthModule } from './auth/auth.module';
     TenantModule,
     ParkingLotModule,
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -34,7 +36,8 @@ export class AppModule implements NestModule {
       .exclude(
         { path: 'auth/signup', method: RequestMethod.POST },
         { path: 'auth/login', method: RequestMethod.POST },
-        { path: 'tenant', method: RequestMethod.POST },
+        { path: 'auth/test-login', method: RequestMethod.POST },
+        { path: 'auth/google/mobile', method: RequestMethod.POST },
       )
       .forRoutes('*');
   }

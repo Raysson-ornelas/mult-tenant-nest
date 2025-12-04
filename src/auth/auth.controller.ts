@@ -1,9 +1,13 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { AuthService } from './auth.service';
+import { AuthService, SignInResponse } from './auth.service';
 
-@Controller('auth/social')
+class GoogleAuthMobileDto {
+  idToken: string;
+}
+
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -14,16 +18,24 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   googleLoginCallback(@Req() req: Request) {
-    return this.authService.login(req.user);
+    if (req.user) return this.authService.signInWithGoogleToken(req.user);
   }
 
-  @Get('facebook')
-  @UseGuards(AuthGuard('facebook'))
-  facebookLogin() {}
-
-  @Get('facebook/callback')
-  @UseGuards(AuthGuard('facebook'))
-  facebookLoginCallback(@Req() req: Request) {
-    return this.authService.login(req.user);
+  @Post('google/mobile')
+  async googleMobile(
+    @Body() body: GoogleAuthMobileDto,
+  ): Promise<SignInResponse> {
+    console.log(body);
+    return this.authService.handleGoogleAuth(body.idToken);
   }
+
+  // @Get('facebook')
+  // @UseGuards(AuthGuard('facebook'))
+  // facebookLogin() {}
+
+  // @Get('facebook/callback')
+  // @UseGuards(AuthGuard('facebook'))
+  // facebookLoginCallback(@Req() req: Request) {
+  //   if (req.user) return this.authService.login(req.user);
+  // }
 }
