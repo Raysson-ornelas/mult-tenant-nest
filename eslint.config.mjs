@@ -1,4 +1,3 @@
-// @ts-check
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
@@ -31,12 +30,10 @@ export default tseslint.config(
       },
     },
     rules: {
-      // Estilo geral
       quotes: ['error', 'single'],
       semi: ['error', 'always'],
       'linebreak-style': ['error', 'unix'],
 
-      // TS-eslint
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-namespace': 'off',
@@ -46,14 +43,12 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
 
-      // ESLint core
       'no-empty-function': 'off',
       'no-shadow': 'off',
       'no-undef': 'off',
       'no-unused-vars': 'off',
       'no-mixed-spaces-and-tabs': 'off',
 
-      // Prettier
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   }

@@ -25,7 +25,6 @@ export class AuthController {
   async googleMobile(
     @Body() body: GoogleAuthMobileDto,
   ): Promise<SignInResponse> {
-    console.log(body);
     return this.authService.handleGoogleAuth(body.idToken);
   }
 

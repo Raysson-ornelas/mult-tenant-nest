@@ -25,5 +25,6 @@ import { UserModule } from 'src/user/user.module';
   ],
   controllers: [UserController, AuthController],
   providers: [GoogleStrategy, FacebookStrategy, AuthService, JwtStrategy],
+  exports: [JwtModule],
 })
 export class AuthModule {}

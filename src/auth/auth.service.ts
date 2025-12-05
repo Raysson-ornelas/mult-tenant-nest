@@ -68,13 +68,13 @@ export class AuthService {
     });
   }
 
-  signInWithGoogleToken(user: User): AuthTokenResponse {
+  signInWithGoogleToken(user: Partial<User>): AuthTokenResponse {
     const payload = {
       username: user.name,
       sub: user.id,
       email: user.email,
       role: user.role,
-      tenant: user.tenantId,
+      tenantId: user.tenantId,
     };
     return {
       access_token: this.jwtService.sign(payload),
