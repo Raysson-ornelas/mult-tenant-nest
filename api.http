@@ -1,4 +1,19 @@
 # GET http://localhost:3000/users HTTP/1.1
 # X-Tenant-ID: cmhxt6zmt0001x520yqu0p8e8
 
-POST http://localhost:3000/auth/signup
+# POST http://localhost:3000/auth/signup
+
+
+
+# POST http://localhost:3000/auth/test-login
+# Content-Type: application/json
+
+# {
+#   "email": "rafa@gmail.com",
+#   "name": "Rafael",
+#   "provider": "google",
+#   "providerId": "google-uid-123"
+# }
+
+GET http://localhost:3000/user/rayssonornelas2006@gmail.com
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlJheXNzb24gT3JuZWxhcyIsInN1YiI6ImNtaXQxcXY2YzAwMDF4NW9qdWpnOWF4bDQiLCJlbWFpbCI6InJheXNzb25vcm5lbGFzMjAwNkBnbWFpbC5jb20iLCJyb2xlIjoiQVBQX1VTRVIiLCJ0ZW5hbnRJZCI6ImNtaXQxcXY2NzAwMDB4NW9qcDRvaDZ4NGciLCJpYXQiOjE3NjQ5NTAxNDQsImV4cCI6MTc2NTAzNjU0NH0.qsZ5tIzYlOsRxTUr9DytgIoVRkM89YLbD77XkqW6hnQ

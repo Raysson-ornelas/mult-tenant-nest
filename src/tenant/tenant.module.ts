@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TenantService } from './tenant.service';
+import { TenantContextService } from './tenant-context.service';
 
 @Module({
-  providers: [TenantService],
-  exports: [TenantService],
+  providers: [TenantContextService],
+  exports: [TenantContextService],
 })
 export class TenantModule {}
