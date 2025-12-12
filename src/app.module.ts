@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ContextSetterMiddleware } from './tenant/context-setter.middleware';
 import { TenantModule } from './tenant/tenant.module';
+import { ParkingRecordModule } from './parking-record/parking-record.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TenantModule } from './tenant/tenant.module';
     ParkingLotModule,
     AuthModule,
     UserModule,
+    ParkingRecordModule,
   ],
   controllers: [AppController],
   providers: [AppService],

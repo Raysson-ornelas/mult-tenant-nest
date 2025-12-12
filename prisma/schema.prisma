@@ -33,24 +33,24 @@ model Tenant {
   id   String @id @default(cuid())
   name String
 
-  users       User[]
-  cars        Car[]
-  parkingLots ParkingLot[]
+  users          User[]
+  parkingLots    ParkingLot[]
+  parkingRecords ParkingRecord[]
 }
 
-model Car {
-  id       String          @id @default(cuid())
-  plate    String
-  tenantId String
-  tenant   Tenant          @relation(fields: [tenantId], references: [id])
-  records  ParkingRecord[]
+// model Car {
+//   id       String          @id @default(cuid())
+//   plate    String
+//   tenantId String
+//   tenant   Tenant          @relation(fields: [tenantId], references: [id])
+//   records  ParkingRecord[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@unique([plate, tenantId])
-  @@index([tenantId])
-}
+//   @@unique([plate, tenantId])
+//   @@index([tenantId])
+// }
 
 model ParkingLot {
   id             String          @id @default(cuid())
@@ -69,18 +69,19 @@ model ParkingLot {
 }
 
 model ParkingRecord {
-  id           String     @id @default(cuid())
-  entryTime    DateTime
-  exitTime     DateTime?
-  total        Float?
-  carId        String
-  car          Car        @relation(fields: [carId], references: [id])
+  id        String    @id @default(cuid())
+  entryTime DateTime
+  exitTime  DateTime?
+  plate     String
+  total     Float?
+  tenant    Tenant?   @relation(fields: [tenantId], references: [id])
+  tenantId  String?
+
   parkingLotId String
   parkingLot   ParkingLot @relation(fields: [parkingLotId], references: [id])
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@index([carId])
-  @@index([parkingLotId])
+  @@index([plate, parkingLotId, exitTime])
 }
